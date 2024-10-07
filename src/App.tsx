@@ -1,10 +1,10 @@
 import Header from './components/Header';
 import LoadingSpinner from './components/LoadingSpinner';
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import * as faceapi from "face-api.js";
 
 function App() {
-
+  const [epxression, seExpression] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -37,6 +37,9 @@ function App() {
     ).withFaceLandmarks().withFaceExpressions();
 
     if (detection) {
+      const dominantExpression = detection.expressions.asSortedArray()[0];
+      seExpression(dominantExpression.expression);
+
       faceapi.matchDimensions(canvasEl, {
         width: videoEl?.offsetWidth,
         height: videoEl?.offsetHeight
@@ -77,7 +80,8 @@ function App() {
         >
           <p className="text-4xl text-center flex justify-center items-center text-yellow-300">
             {/* Substitua pelo texto */}
-            <LoadingSpinner />
+            Sua expressão é: {epxression}
+            {/*<LoadingSpinner />*/}
             {/* Substitua pelo texto */}
           </p>
         </div>
