@@ -26,6 +26,20 @@ function App() {
     loadModels().then(() => {});
   }, []);
 
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+
+    const detect = async () => {
+      const detection = await faceapi.detectSingleFace(
+          videoEl as HTMLVideoElement, new faceapi.TinyFaceDetectorOptions()
+      );
+      console.log(detection);
+    };
+
+    detect().then(() => {});
+  }, []);
+
   return (
     <main className="min-h-screen flex flex-col lg:flex-row md:justify-between gap-14 xl:gap-40 p-10 items-center container mx-auto">
       <Header />
