@@ -1,6 +1,7 @@
 import Header from './components/Header';
 import LoadingSpinner from './components/LoadingSpinner';
 import {useEffect, useRef} from "react";
+import * as faceapi from "face-api.js";
 
 function App() {
 
@@ -11,9 +12,18 @@ function App() {
       const videoEl = videoRef.current;
       if (videoEl) {
         videoEl.srcObject = stream;
-        videoEl.play().then(r => console.log(r)).catch(e => console.log(e));
       }
     });
+  }, []);
+
+  useEffect(() => {
+    const loadModels = async () => {
+      await faceapi.loadTinyFaceDetectorModel('/models');
+      await faceapi.loadFaceLandmarkModel('/models');
+      await faceapi.loadFaceExpressionModel('/models');
+    };
+
+    loadModels().then(() => {});
   }, []);
 
   return (
@@ -23,7 +33,7 @@ function App() {
         <div className="bg-white rounded-xl p-2">
           <div className="relative flex items-center justify-center aspect-video w-full">
             <div className="aspect-video rounded-lg bg-gray-300 w-full">
-              <video ref={videoRef}></video>
+              <video autoPlay ref={videoRef}></video>
             </div>
           </div>
         </div>
