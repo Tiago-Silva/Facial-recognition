@@ -6,6 +6,7 @@ import * as faceapi from "face-api.js";
 function App() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
@@ -26,19 +27,31 @@ function App() {
     loadModels().then(() => {});
   }, []);
 
-  useEffect(() => {
+  const handleLoadedMetadata = async () => {
     const videoEl = videoRef.current;
-    if (!videoEl) return;
+    const canvasEl = canvasRef.current;
+    if (!videoEl || !canvasEl) return;
 
-    const detect = async () => {
-      const detection = await faceapi.detectSingleFace(
-          videoEl as HTMLVideoElement, new faceapi.TinyFaceDetectorOptions()
-      );
-      console.log(detection);
-    };
+    const detection = await faceapi.detectSingleFace(
+        videoEl as HTMLVideoElement, new faceapi.TinyFaceDetectorOptions()
+    ).withFaceLandmarks().withFaceExpressions();
 
-    detect().then(() => {});
-  }, []);
+    if (detection) {
+      faceapi.matchDimensions(canvasEl, {
+        width: videoEl?.offsetWidth,
+        height: videoEl?.offsetHeight
+      });
+      const resizeResults = faceapi.resizeResults(detection, {
+        width: videoEl?.offsetWidth,
+        height: videoEl?.offsetHeight,
+      });
+      faceapi.draw.drawDetections(canvasEl as HTMLCanvasElement, resizeResults);
+      faceapi.draw.drawFaceLandmarks(canvasEl as HTMLCanvasElement, resizeResults);
+      faceapi.draw.drawFaceExpressions(canvasEl as HTMLCanvasElement, resizeResults);
+    }
+
+    setTimeout(() => handleLoadedMetadata(), 100);
+  };
 
   return (
     <main className="min-h-screen flex flex-col lg:flex-row md:justify-between gap-14 xl:gap-40 p-10 items-center container mx-auto">
@@ -47,7 +60,15 @@ function App() {
         <div className="bg-white rounded-xl p-2">
           <div className="relative flex items-center justify-center aspect-video w-full">
             <div className="aspect-video rounded-lg bg-gray-300 w-full">
-              <video autoPlay ref={videoRef}></video>
+              <div className='relative flex items-center justify-center w-full aspect-video'>
+                <video
+                    onLoadedMetadata={handleLoadedMetadata}
+                    autoPlay
+                    ref={videoRef}
+                    className='rounded-lg'
+                ></video>
+                <canvas ref={canvasRef} className='absolute inset-0 h-full w-full'></canvas>
+              </div>
             </div>
           </div>
         </div>
