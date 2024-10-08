@@ -1,10 +1,12 @@
 import Header from './components/Header';
-import LoadingSpinner from './components/LoadingSpinner';
+// import LoadingSpinner from './components/LoadingSpinner';
 import {useEffect, useRef, useState} from "react";
 import * as faceapi from "face-api.js";
+import {translateExpressionToEmoji} from "./lib/utils.ts";
+import ResultMessage from "./components/ResultMessage.tsx";
 
 function App() {
-  const [epxression, seExpression] = useState<string>('');
+  const [expression, seExpression] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -68,7 +70,7 @@ function App() {
                     onLoadedMetadata={handleLoadedMetadata}
                     autoPlay
                     ref={videoRef}
-                    className='rounded-lg'
+                    className='rounded-lg w-full'
                 ></video>
                 <canvas ref={canvasRef} className='absolute inset-0 h-full w-full'></canvas>
               </div>
@@ -76,14 +78,14 @@ function App() {
           </div>
         </div>
         <div
-          className={`bg-white rounded-xl px-8 py-6 flex gap-6 lg:gap-20 items-center h-[200px] justify-center`}
+          className={`bg-white rounded-xl px-8 py-6 flex gap-6 lg:gap-20 items-center h-[200px] justify-between`}
         >
-          <p className="text-4xl text-center flex justify-center items-center text-yellow-300">
-            {/* Substitua pelo texto */}
-            Sua expressão é: {epxression}
-            {/*<LoadingSpinner />*/}
-            {/* Substitua pelo texto */}
-          </p>
+          <span className='lg-tex-[100px] text-6xl'>
+            {expression && translateExpressionToEmoji(expression)}
+          </span>
+          <h3 className='text-3xl text-right lg:text-4xl md:text-3xl text-yellow-500 font-secondary'>
+            <ResultMessage expression={expression} />
+          </h3>
         </div>
       </section>
     </main>
