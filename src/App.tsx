@@ -1,34 +1,19 @@
 import Header from './components/Header';
 import LoadingSpinner from './components/LoadingSpinner';
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import * as faceapi from "face-api.js";
 import {translateExpressionToEmoji} from "./lib/utils.ts";
 import ResultMessage from "./components/ResultMessage.tsx";
+import useWebcam from "./hooks/useWebcam.tsx";
+import useLoadModels from "./hooks/useLoadModels.tsx";
 
 function App() {
   const [expression, seExpression] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
-      const videoEl = videoRef.current;
-      if (videoEl) {
-        videoEl.srcObject = stream;
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const loadModels = async () => {
-      await faceapi.loadTinyFaceDetectorModel('/models');
-      await faceapi.loadFaceLandmarkModel('/models');
-      await faceapi.loadFaceExpressionModel('/models');
-    };
-
-    loadModels().then(() => {});
-  }, []);
+  useWebcam(videoRef);
+  useLoadModels();
 
   const handleLoadedMetadata = async () => {
     const videoEl = videoRef.current;
