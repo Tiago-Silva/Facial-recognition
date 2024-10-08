@@ -3,7 +3,7 @@ Este é um mini-aplicativo que realiza a leitura de expressões faciais utilizan
 
 <h1 align="center">
     <img src="./public/tela01.gif" width="300" alt="Preview do App"/>
-    <img src="./public/tela02.png" width="300" alt="Interface do App"/>
+    <img src="./public/tela02.png" width="800" alt="Interface do App"/>
 </h1>
 
 ## 🚀 Motivação e Objetivo
